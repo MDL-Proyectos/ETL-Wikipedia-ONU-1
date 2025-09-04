@@ -1,0 +1,7 @@
+
+# Para PSQL
+psycopg2-binary
+# Para variables de entorno
+python-dotenv 
+# Extracción de datos y normalización
+pandas

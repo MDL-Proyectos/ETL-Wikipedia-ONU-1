@@ -20,3 +20,6 @@ for dato in datos:
     print(dato["Fecha de admisión[13]\u200b"])  # Fecha de admisión
     print(dato["Notas"])  # Notas
     print("-----")
+    # Con el método pop() corregimos el nombre de la clave. Normalizamos el nombre de la clave.
+    dato["fecha"] = dato.pop("Fecha de admisión[13]\u200b")
+    print(dato["fecha"])

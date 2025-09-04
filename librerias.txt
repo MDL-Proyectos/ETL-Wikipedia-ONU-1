@@ -5,3 +5,6 @@ psycopg2-binary
 python-dotenv 
 # Extracción de datos y normalización
 pandas
+
+#.ENV
+python-dotenv

@@ -2,41 +2,47 @@ import psycopg2
 from dotenv import load_dotenv
 import os
 
+class PostgresDB:
+    def __init__(self):
+        load_dotenv()
+        self.conn = psycopg2.connect(
+            host=os.getenv("DB_HOST"),
+            database=os.getenv("DB_DATABASE"),
+            port=os.getenv("DB_PORT"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PSS")
+        )
+        self.cur = self.conn.cursor()
+        self.create_table()
 
-#validación de variables de entorno.
-load_dotenv()
-#print("Conectando a la base de datos...")
-#print(f"Host: {os.getenv('DB_HOST')}")
-#print(f"Database: {os.getenv('DB_DATABASE')}")
-#print(f"Port: {os.getenv('DB_PORT')}")
-#print(f"User: {os.getenv('DB_USER')}")
+    def create_table(self):
+        self.cur.execute("""
+            CREATE TABLE IF NOT EXISTS paises_onu (
+                id SERIAL PRIMARY KEY,
+                nombre VARCHAR(100),
+                denominacion VARCHAR(100),
+                fecha_admision DATE,
+                notas VARCHAR(250)
+            );
+        """)
+        self.conn.commit()
 
-# Parámetros de conexión
-conn = psycopg2.connect(
-    host=os.getenv("DB_HOST"),
-    database=os.getenv("DB_DATABASE"),
-    port=os.getenv("DB_PORT"),
-    user=os.getenv("DB_USER"),
-    password=os.getenv("DB_PSS")
-)
+    def load_to_db(self, datos):
+        registros = 0
+        for dato in datos:
+            self.cur.execute("""
+                INSERT INTO paises_onu (nombre, denominacion, fecha_admision, notas)
+                VALUES (%s, %s, %s, %s)
+            """, (
+                dato.get("Estado miembro"),
+                dato.get("Denominación UNTERM"),
+                dato.get("Fecha de admisión"),
+                dato.get("Notas")
+            ))
+            registros += 1
+        self.conn.commit()
+        return registros
 
-cur = conn.cursor()
-
-# Crea la tabla si no existe
-cur.execute("""
-    CREATE TABLE IF NOT EXISTS paises_onu (
-        id SERIAL PRIMARY KEY,
-        nombre VARCHAR(100),
-        denominacion VARCHAR(100),
-        fecha_admision DATE,        
-        notas VARCHAR(150)  
-    );
-""")
-conn.commit()
-
-cur.execute("SELECT version();")
-print(cur.fetchone())
-
-# Cerrar cursor y conexión
-cur.close()
-conn.close()
+    def close(self):
+        self.cur.close()
+        self.conn.close()

@@ -4,7 +4,7 @@ class DataTransformer:
     def __init__(self):
         
         pass
-    
+
     @staticmethod    
     def normalize_data(nombre):
         if not isinstance(nombre, str):
@@ -29,8 +29,8 @@ class DataTransformer:
             "noviembre": "11",
             "diciembre": "12"
         }
-
-        partes = fecha_str.split(" de ")
+        # el formato que viene de la página es: "25 de agosto de 1980"
+        partes = fecha_str.split(" de ") # Divide la cadena en partes usando " de " como separador
         if len(partes) == 3:
             dia, mes, anio = partes
             mes_num = MESES.get(mes.lower())
